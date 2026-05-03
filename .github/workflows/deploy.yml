@@ -38,4 +38,4 @@ jobs:
             --entry-point=email_sender \
             --trigger-topic=file-converted \
             --service-account=${{ secrets.RUNTIME_SERVICE_ACCOUNT }} \
-            --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},FROM_EMAIL=${{ secrets.FROM_EMAIL }}
+            --set-env-vars GMAIL_ADDRESS=${{ secrets.GMAIL_ADDRESS }},GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}
