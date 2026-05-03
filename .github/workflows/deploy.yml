@@ -1,0 +1,41 @@
+name: Deploy Email Sender Function
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  repository_dispatch:
+
+env:
+  REGION: me-central1
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy Cloud Function
+        run: |
+          gcloud functions deploy email-sender-function \
+            --gen2 \
+            --region=$REGION \
+            --project=$PROJECT_ID \
+            --runtime=python311 \
+            --source=. \
+            --entry-point=email_sender \
+            --trigger-topic=file-converted \
+            --service-account=${{ secrets.RUNTIME_SERVICE_ACCOUNT }} \
+            --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},FROM_EMAIL=${{ secrets.FROM_EMAIL }}
